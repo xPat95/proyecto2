@@ -1,6 +1,5 @@
 const driver = require('../db');
 
-// Función para obtener recomendaciones para un usuario
 const obtenerRecomendaciones = async (req, res) => {
   const usuarioId = req.params.usuarioId;
   const session = driver.session();
@@ -22,7 +21,6 @@ const obtenerRecomendaciones = async (req, res) => {
   }
 };
 
-// Función para registrar una interacción
 const agregarInteraccion = async (req, res) => {
   const { usuarioId, peliculaId, titulo } = req.body;
   const session = driver.session();
