@@ -12,7 +12,28 @@ app.use(cors());
 app.use(express.static('public'));
 app.use(bodyParser.json());
 
-// Ruta de recomendación
+app.post('/registro-completo', async (req, res) => {
+  const session = driver.session();
+  const { nombre, pelicula, genero } = req.body;
+
+  try {
+    await session.run(`
+      MERGE (u:Usuario {nombre: $nombre})
+      MERGE (p:Pelicula {titulo: $pelicula})
+      MERGE (g:Genero {nombre: $genero})
+      MERGE (u)-[:VIO]->(p)
+      MERGE (u)-[:PREFIERE]->(g)
+    `, { nombre, pelicula, genero });
+
+    res.status(200).send("Usuario y relaciones registradas");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error al registrar");
+  } finally {
+    await session.close();
+  }
+});
+
 app.get('/recomendar/:nombre', async (req, res) => {
   const session = driver.session();
   const nombre = req.params.nombre;
@@ -30,25 +51,6 @@ app.get('/recomendar/:nombre', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Error al obtener recomendaciones");
-  } finally {
-    await session.close();
-  }
-});
-
-// Ruta para agregar un nuevo usuario
-app.post('/usuarios', async (req, res) => {
-  const session = driver.session();
-  const { nombre } = req.body;
-
-  try {
-    await session.run(`
-      MERGE (:Usuario {nombre: $nombre})
-    `, { nombre });
-
-    res.status(200).send("Usuario creado exitosamente");
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Error al crear usuario");
   } finally {
     await session.close();
   }

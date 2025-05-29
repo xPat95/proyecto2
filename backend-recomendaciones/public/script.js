@@ -1,26 +1,28 @@
-document.getElementById('formulario-usuario').addEventListener('submit', async (e) => {
+document.getElementById('form-registro').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const nombre = document.getElementById('nombre').value;
 
-  const respuesta = await fetch('/usuarios', {
+  const nombre = document.getElementById('nombre').value.trim();
+  const pelicula = document.getElementById('pelicula').value.trim();
+  const genero = document.getElementById('genero').value.trim();
+
+  if (!nombre || !pelicula || !genero) {
+    alert("Completa todos los campos.");
+    return;
+  }
+
+  const res = await fetch('/registro-completo', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ nombre })
+    body: JSON.stringify({ nombre, pelicula, genero })
   });
 
-  if (respuesta.ok) {
-    alert('Usuario registrado exitosamente');
-    document.getElementById('nombre').value = '';
-  } else {
-    alert('Error al registrar usuario');
-  }
+  alert(res.ok ? 'Registro completo exitoso' : 'Error al registrar');
 });
 
 async function obtenerRecomendaciones() {
-  const nombre = document.getElementById('usuarioRecomendado').value;
-
-  const respuesta = await fetch(`/recomendar/${nombre}`);
-  const datos = await respuesta.json();
+  const nombre = document.getElementById('usuarioRecomendado').value.trim();
+  const res = await fetch(`/recomendar/${nombre}`);
+  const datos = await res.json();
 
   const lista = document.getElementById('lista-recomendaciones');
   lista.innerHTML = '';
