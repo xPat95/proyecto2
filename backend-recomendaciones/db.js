@@ -1,8 +1,10 @@
+// db.js
 const neo4j = require('neo4j-driver');
+require('dotenv').config();
 
 const driver = neo4j.driver(
-  'bolt://localhost:7687', 
-  neo4j.auth.basic('neo4j', 'tu_contraseña') 
+  process.env.NEO4J_URI,
+  neo4j.auth.basic(process.env.NEO4J_USER, process.env.NEO4J_PASS)
 );
 
 module.exports = driver;
