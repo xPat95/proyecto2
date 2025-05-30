@@ -2,10 +2,73 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Registro y Recomendador</title>
+  <title>Recomendador de películas</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f2f4f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h2 {
+      color: #2c3e50;
+      margin-top: 40px;
+    }
+
+    form, .recomendaciones {
+      background-color: #ffffff;
+      padding: 30px;
+      margin: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 400px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    li {
+      background-color: #ecf0f1;
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: 6px;
+    }
+  </style>
 </head>
 <body>
-  <h2>Registro completo</h2>
+  <h2>Registro de Usuario</h2>
   <form id="form-registro">
     <input type="text" id="nombre" placeholder="Nombre del usuario" required>
     <input type="text" id="pelicula" placeholder="Película que vio" required>
@@ -13,10 +76,12 @@
     <button type="submit">Registrar todo</button>
   </form>
 
-  <h2>Recomendaciones</h2>
-  <input type="text" id="usuarioRecomendado" placeholder="Tu nombre">
-  <button onclick="obtenerRecomendaciones()">Ver recomendaciones</button>
-  <ul id="lista-recomendaciones"></ul>
+  <h2>Recomendaciones personalizadas</h2>
+  <div class="recomendaciones">
+    <input type="text" id="usuarioRecomendado" placeholder="Tu nombre">
+    <button onclick="obtenerRecomendaciones()">Ver recomendaciones</button>
+    <ul id="lista-recomendaciones"></ul>
+  </div>
 
   <script src="script.js"></script>
 </body>
