@@ -1,21 +1,28 @@
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const driver = require('./db');
+//Importar dependencias
+const express = require('express'); //Framework para crear servidor HTTP.
+const cors = require('cors'); //Habilita intercambio de recursos entre dominios diferentes.
+const bodyParser = require('body-parser'); //Parser para procesar datos en el codigo a peticion HTTP en formato JSON.
+const driver = require('./db'); //Archivo externo que contiene la configuración de la base de datos en Neo4j.
 
-require('dotenv').config();
+require('dotenv').config(); //Cargar variables del entorno (.env).
 
-const app = express();
-const PORT = 3000;
+//Configurar servidor
+const app = express(); //Instancia de la aplicacion de Express.
+const PORT = 3000; //Puerto en el que se ejecutará la aplicacion.
 
-app.use(cors());
-app.use(express.static('public'));
-app.use(bodyParser.json());
+//Middlewares
+app.use(cors()); //Para solicitar desde otros dominios
+app.use(express.static('public')); //Sirve archivos estaticos desde la carpeta de public.
+app.use(bodyParser.json()); //Lee datos de JSON en las peticiones POST.
 
+//Ruta del Post
+
+//Recibe un JSON con nombre(usuario), pelicula y genero.
 app.post('/registro-completo', async (req, res) => {
   const session = driver.session();
   const { nombre, pelicula, genero } = req.body;
 
+  //comandos de cypher para crear nodos de usuario, pelicula, genero y crear relaciones de "vio" o "prefiere".
   try {
     await session.run(`
       MERGE (u:Usuario {nombre: $nombre})
@@ -24,7 +31,8 @@ app.post('/registro-completo', async (req, res) => {
       MERGE (u)-[:VIO]->(p)
       MERGE (u)-[:PREFIERE]->(g)
     `, { nombre, pelicula, genero });
-
+  
+  //Retorna si se logra registrar o no, postetior cierra la sesion de base de datos.
     res.status(200).send("Usuario y relaciones registradas");
   } catch (error) {
     console.error(error);
@@ -34,10 +42,14 @@ app.post('/registro-completo', async (req, res) => {
   }
 });
 
+//Ruta del GET
+
+//Recopila el nombre del usuario desde la URL.
 app.get('/recomendar/:nombre', async (req, res) => {
   const session = driver.session();
   const nombre = req.params.nombre;
 
+  //Encuentra los generos preferidos del usuario, busca peliculas con ese genero que no ha visto, y devuelve 5 recomendaciones.
   try {
     const result = await session.run(`
       MATCH (u:Usuario {nombre: $nombre})-[:PREFIERE]->(g:Genero)<-[:TIENE_GENERO]-(p:Pelicula)
@@ -45,7 +57,8 @@ app.get('/recomendar/:nombre', async (req, res) => {
       RETURN DISTINCT p.titulo AS recomendacion
       LIMIT 5
     `, { nombre });
-
+  
+  //Devuelve las recomendaciones como JSON.
     const recomendaciones = result.records.map(r => r.get('recomendacion'));
     res.json(recomendaciones);
   } catch (error) {
@@ -56,6 +69,7 @@ app.get('/recomendar/:nombre', async (req, res) => {
   }
 });
 
+//Inicializa el servidor
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
